@@ -26,23 +26,23 @@ func build(ctx context.Context) error {
 	defer client.Close()
 
 	// Docker イメージを取得する
-	golang := client.Container().From("golang:1.19")
+	container := client.Container().From("golang:1.19")
 
 	// カレントディレクトリをコンテナにマウントする
 	// ワーキングディレクトリを指定する
 	src := client.Host().Directory(".")
-	golang = golang.
+	container = container.
 		WithMountedDirectory("/src", src).
 		WithWorkdir("/src")
 
 	// 実行するコマンドを設定する
 	path := "build/"
-	golang = golang.
+	container = container.
 		WithExec([]string{"go", "test", "-v", "./..."}).
 		WithExec([]string{"go", "build", "-o", path})
 
 	// バイナリを出力するディレクトリを取得します。
-	output := golang.Directory(path)
+	output := container.Directory(path)
 	// バイナリを出力します。
 	_, err = output.Export(ctx, path)
 
