@@ -1,0 +1,24 @@
+version: 2.1
+
+orbs:
+  go: circleci/go@1.7.1
+
+jobs:
+  ci:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - go/install:
+          version: "1.19"
+      - go/load-cache
+      - go/mod-download
+      - go/save-cache
+      - run:
+          name: ci
+          command: go run ./main.go
+
+workflows:
+  ci:
+    jobs:
+      - ci
